@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="431.0" prefWidth="244.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="battleship.Views.MainScreenController">
+  <children>
+    <Label layoutX="14.0" layoutY="8.0" text="Welcome">
+      <font>
+        <Font size="22.0" />
+      </font>
+    </Label>
+    <Button layoutX="14.0" layoutY="68.0" mnemonicParsing="false" onMouseClicked="#openServer" prefWidth="215.0" text="Start Server" />
+    <Button layoutX="14.0" layoutY="108.0" mnemonicParsing="false" onMouseClicked="#openSearch" prefWidth="215.0" text="Join open Game" />
+    <ImageView fitHeight="229.0" fitWidth="229.0" layoutX="7.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+        <Image url="https://www.iconexperience.com/_img/o_collection_png/green_dark_grey/512x512/plain/pirates_ship.png" />
+      </image>
+    </ImageView>
+  </children>
+</AnchorPane>

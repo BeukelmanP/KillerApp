@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="596.0" prefWidth="889.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="battleship.Views.GameViewController">
+  <children>
+    <Label layoutX="14.0" layoutY="14.0" text="You">
+      <font>
+        <Font size="20.0" fx:id="x1" />
+      </font>
+    </Label>
+    <Label font="$x1" layoutX="702.0" layoutY="14.0" text="Opponent" />
+    <Label fx:id="lblGameName" layoutX="384.0" layoutY="12.0" text="GameName">
+      <font>
+        <Font size="23.0" />
+      </font>
+    </Label>
+    <Label layoutX="14.0" layoutY="41.0" text="Label" />
+    <Pane fx:id="boardPane" layoutX="199.0" layoutY="88.0" prefHeight="495.0" prefWidth="495.0" />
+    <Pane fx:id="panePlacement" layoutX="14.0" layoutY="205.0" prefHeight="317.0" prefWidth="128.0">
+      <children>
+        <Label layoutX="14.0" layoutY="14.0" text="Ship Placement">
+          <font>
+            <Font size="15.0" fx:id="x3" />
+          </font>
+        </Label>
+        <Label layoutX="15.0" layoutY="51.0" text="Start Coord:" />
+        <TextField id="txtFireX" fx:id="txtShip1X" layoutX="25.0" layoutY="68.0" prefWidth="35.0" />
+        <TextField id="txtFireY" fx:id="txtShip1Y" layoutX="85.0" layoutY="68.0" prefWidth="35.0" />
+        <Label layoutX="15.0" layoutY="71.0" text="X:" />
+        <Label layoutX="75.0" layoutY="71.0" text="Y:" />
+        <ChoiceBox fx:id="HVShip1" layoutX="15.0" layoutY="90.0" prefWidth="102.0">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ChoiceBox>
+        <Label layoutX="15.0" layoutY="37.0" text="Ship 1(Length: 2)">
+          <font>
+            <Font size="13.0" fx:id="x2" />
+          </font>
+        </Label>
+        <Label layoutX="15.0" layoutY="130.0" text="Start Coord:" />
+        <TextField id="txtFireX" fx:id="txtShip2X" layoutX="25.0" layoutY="147.0" prefWidth="35.0" />
+        <TextField id="txtFireY" fx:id="txtShip2Y" layoutX="85.0" layoutY="147.0" prefWidth="35.0" />
+        <Label layoutX="15.0" layoutY="150.0" text="X:" />
+        <Label layoutX="75.0" layoutY="150.0" text="Y:" />
+        <ChoiceBox fx:id="HVShip2" layoutX="15.0" layoutY="169.0" prefWidth="102.0">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ChoiceBox>
+        <Label font="$x2" layoutX="15.0" layoutY="116.0" text="Ship 1(Length: 2)" />
+        <Label layoutX="15.0" layoutY="210.0" text="Start Coord:" />
+        <TextField id="txtFireX" fx:id="txtShip3X" layoutX="25.0" layoutY="227.0" prefWidth="35.0" />
+        <TextField id="txtFireY" fx:id="txtShip3Y" layoutX="85.0" layoutY="227.0" prefWidth="35.0" />
+        <Label layoutX="15.0" layoutY="230.0" text="X:" />
+        <Label layoutX="75.0" layoutY="230.0" text="Y:" />
+        <ChoiceBox fx:id="HVShip3" layoutX="15.0" layoutY="249.0" prefWidth="102.0">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ChoiceBox>
+        <Label font="$x2" layoutX="15.0" layoutY="196.0" text="Ship 1(Length: 2)" />
+        <Button layoutX="15.0" layoutY="281.0" mnemonicParsing="false" onMouseClicked="#placeShipsClick" prefWidth="102.0" text="Place" />
+      </children>
+    </Pane>
+    <Pane fx:id="paneShoot" layoutX="14.0" layoutY="97.0" prefHeight="109.0" prefWidth="128.0">
+      <children>
+        <Button fx:id="btnFire" layoutX="12.0" layoutY="68.0" mnemonicParsing="false" onMouseClicked="#btnFireCLick" prefHeight="31.0" prefWidth="105.0" text="Fire!">
+          <font>
+            <Font size="14.0" />
+          </font>
+        </Button>
+        <TextField fx:id="txtFireX" layoutX="22.0" layoutY="38.0" prefWidth="35.0" />
+        <TextField fx:id="txtFireY" layoutX="82.0" layoutY="38.0" prefWidth="35.0" />
+        <Label layoutX="12.0" layoutY="41.0" text="X:" />
+        <Label layoutX="72.0" layoutY="41.0" text="Y:" />
+        <Label font="$x3" layoutX="12.0" layoutY="14.0" text="Shoot" />
+      </children>
+    </Pane>
+    <Pane fx:id="myShipsPane" layoutX="702.0" layoutY="410.0" prefHeight="173.0" prefWidth="173.0" />
+    <Label font="$x3" layoutX="702.0" layoutY="385.0" text="Your Ships:" />
+    <Label font="$x3" layoutX="401.0" layoutY="53.0" text="your playfield" />
+    <Label fx:id="lblOpponentName" layoutX="702.0" layoutY="41.0" text="Label" />
+    <Label fx:id="lblTotalScore" layoutX="702.0" layoutY="53.0" text="Label" />
+    <Label fx:id="lblHighestScore" layoutX="702.0" layoutY="65.0" text="Label" />
+    <Label fx:id="lblGamesPlayed" layoutX="702.0" layoutY="80.0" text="Label" />
+  </children>
+</AnchorPane>

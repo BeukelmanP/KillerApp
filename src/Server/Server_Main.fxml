@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="365.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="Server.Server_MainController">
+  <children>
+    <Button fx:id="startButton" layoutX="13.0" layoutY="21.0" mnemonicParsing="false" onMouseClicked="#startServerClick" text="Start Server" />
+    <Button fx:id="stopButton" layoutX="14.0" layoutY="59.0" mnemonicParsing="false" onMouseClicked="#stopServerClick" text="Stop Server" />
+    <Button fx:id="refreshButton" layoutX="14.0" layoutY="97.0" mnemonicParsing="false" onMouseClicked="#refreshClick" prefWidth="81.0" text="Refresh" />
+    <ListView fx:id="gameList" layoutX="103.0" layoutY="21.0" prefHeight="365.0" prefWidth="248.0" />
+    <ProgressIndicator fx:id="statusIndicator" layoutX="40.0" layoutY="213.0" progress="0.0" />
+  </children>
+</AnchorPane>
