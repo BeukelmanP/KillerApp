@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JoinGames.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;BattleShip&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Server.Classes</a> &gt; <span class="el_source">JoinGames.java</span></div><h1>JoinGames.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Server.Classes;
+
+import Classes.User;
+import battleship.Views.JoinGameViewController;
+import interfaces.ICreateGame;
+import interfaces.IFinishGame;
+import interfaces.IJoin;
+import interfaces.ILiveGame;
+import interfaces.ILogin;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author piete
+ */
+public class JoinGames extends UnicastRemoteObject implements IJoin, ICreateGame, ILogin, IFinishGame {
+
+    private ArrayList&lt;String&gt; games;
+    private ArrayList&lt;User&gt; users;
+    private ArrayList&lt;User&gt; allowedUsers;
+    private Database database;
+
+<span class="fc" id="L37">    public JoinGames() throws RemoteException {</span>
+<span class="fc" id="L38">        games = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L39">        database = new Database();</span>
+        try {
+<span class="fc" id="L41">            database.getConnection();</span>
+<span class="fc" id="L42">            users = database.getUsers();</span>
+<span class="nc" id="L43">        } catch (SQLException ex) {</span>
+<span class="nc" id="L44">            Logger.getLogger(JoinGames.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L45">        } catch (ClassNotFoundException ex) {</span>
+<span class="nc" id="L46">            Logger.getLogger(JoinGames.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="pc" id="L47">        }</span>
+<span class="fc" id="L48">    }</span>
+
+    @Override
+    public ILiveGame getGameServer(String Game) throws RemoteException {
+<span class="fc" id="L52">        String[] gameInfo = Game.split(&quot;;&quot;);</span>
+<span class="fc" id="L53">        Registry gameRegistry = null;</span>
+<span class="fc" id="L54">        ILiveGame game = null;</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (games.contains(Game)) {</span>
+<span class="nc" id="L56">            games.remove(Game);</span>
+            try {
+<span class="nc" id="L58">                gameRegistry = LocateRegistry.getRegistry(gameInfo[1], 1098);</span>
+<span class="nc" id="L59">                System.out.println(&quot;registry Binded&quot;);</span>
+<span class="nc" id="L60">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L61">                System.out.println(&quot;Cannot locate registry&quot;);</span>
+<span class="nc" id="L62">                System.out.println(&quot;RemoteException: &quot; + ex.getMessage());</span>
+<span class="nc" id="L63">                Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L64">            }</span>
+            try {
+<span class="nc" id="L66">                game = (ILiveGame) gameRegistry.lookup(&quot;gameServer&quot;);</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                if (game != null) {</span>
+<span class="nc" id="L68">                    System.out.println(&quot;JoinInterface Found&quot;);</span>
+                } else {
+<span class="nc" id="L70">                    System.out.println(&quot;JoinInterface NOT Found&quot;);</span>
+                }
+<span class="nc" id="L72">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L73">                System.out.println(&quot;remoteExeption&quot;);</span>
+<span class="nc" id="L74">                Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L75">            } catch (NotBoundException ex) {</span>
+<span class="nc" id="L76">                System.out.println(&quot;notBoundExeption&quot;);</span>
+<span class="nc" id="L77">                Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L78">            }</span>
+<span class="nc" id="L79">            System.out.println(&quot;game send&quot;);</span>
+<span class="nc" id="L80">            System.out.println(game.getGameInfo());</span>
+        }
+<span class="fc" id="L82">        return game;</span>
+    }
+
+    @Override
+    public List&lt;String&gt; getAvailableGames() throws RemoteException {
+<span class="fc" id="L87">        return games;</span>
+    }
+
+    @Override
+    public boolean createGame(String ipAdress, String gameName, int portNumber) throws RemoteException {
+<span class="pc bpc" id="L92" title="4 of 12 branches missed.">        if (ipAdress != null &amp;&amp; ipAdress != &quot;&quot; &amp;&amp; gameName != &quot;&quot; &amp;&amp; gameName != null &amp;&amp; portNumber != 1099 &amp;&amp; portNumber &gt; 0) {</span>
+<span class="fc" id="L93">            String newgame = gameName + &quot;;&quot; + ipAdress + &quot;;&quot; + portNumber;</span>
+<span class="fc" id="L94">            games.add(newgame);</span>
+<span class="fc" id="L95">            System.out.println(&quot;game added!!!!!&quot;);</span>
+<span class="fc" id="L96">            return true;</span>
+        } else {
+<span class="fc" id="L98">            return false;</span>
+        }
+    }
+
+    @Override
+    public User login(String userName, String password) {
+<span class="pc bpc" id="L104" title="1 of 4 branches missed.">        if (userName != null &amp;&amp; password != null) {</span>
+<span class="fc" id="L105">            int index = -1;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">            for (User u : users) {</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">                if (u.getUsername().equals(userName)) {</span>
+<span class="fc" id="L108">                    return u.checkPassword(password);</span>
+                }
+<span class="nc" id="L110">            }</span>
+        }
+<span class="fc" id="L112">        return null;</span>
+    }
+
+    @Override
+    public boolean logout(User userToLogout) throws RemoteException {
+<span class="fc" id="L117">        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.</span>
+    }
+
+    @Override
+    public boolean register(String username, String password, String email) throws RemoteException {
+<span class="fc" id="L122">        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.</span>
+    }
+
+    @Override
+    public void updateScores(User user1, User user2, int score1, int score2) throws RemoteException {
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        for (User u : users) {</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">            if (u.getUserId() == user1.getUserId()) {</span>
+<span class="nc" id="L129">                u.updateScore(score1);</span>
+<span class="nc" id="L130">                database.updateScore(u.getUserId(), u.getTotalScore());</span>
+            }
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            if (u.getUserId() == user2.getUserId()) {</span>
+<span class="nc" id="L133">                u.updateScore(score2);</span>
+<span class="nc" id="L134">                database.updateScore(u.getUserId(), u.getTotalScore());</span>
+            }
+<span class="nc" id="L136">        }</span>
+
+<span class="nc" id="L138">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

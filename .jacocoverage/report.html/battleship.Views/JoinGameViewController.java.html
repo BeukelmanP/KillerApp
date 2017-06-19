@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JoinGameViewController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;BattleShip&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">battleship.Views</a> &gt; <span class="el_source">JoinGameViewController.java</span></div><h1>JoinGameViewController.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package battleship.Views;
+
+import Classes.User;
+import Server.Classes.JoinGames;
+import interfaces.IJoin;
+import interfaces.ILiveGame;
+import java.io.IOException;
+import java.net.URL;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ListView;
+import javafx.stage.Stage;
+
+/**
+ * FXML Controller class
+ *
+ * @author piete
+ */
+<span class="nc" id="L37">public class JoinGameViewController implements Initializable {</span>
+
+    @FXML
+    ListView gameList;
+<span class="nc" id="L41">    Registry registry = null;</span>
+<span class="nc" id="L42">    IJoin joinInterface = null;</span>
+    User loggedInUser;
+
+    /**
+     * Initializes the controller class.
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        try {
+<span class="nc" id="L51">            registry = LocateRegistry.getRegistry(&quot;192.168.31.1&quot;, 1099);</span>
+<span class="nc" id="L52">            System.out.println(&quot;registry Binded&quot;);</span>
+<span class="nc" id="L53">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L54">            System.out.println(&quot;Cannot locate registry&quot;);</span>
+<span class="nc" id="L55">            System.out.println(&quot;RemoteException: &quot; + ex.getMessage());</span>
+<span class="nc" id="L56">            registry = null;</span>
+<span class="nc" id="L57">            Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L58">        }</span>
+        try {
+<span class="nc" id="L60">            joinInterface = (IJoin) registry.lookup(&quot;MainServer&quot;);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (joinInterface != null) {</span>
+<span class="nc" id="L62">                System.out.println(&quot;JoinInterface Found&quot;);</span>
+            } else {
+<span class="nc" id="L64">                System.out.println(&quot;JoinInterface NOT Found&quot;);</span>
+            }
+<span class="nc" id="L66">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L67">            System.out.println(&quot;remoteExeption&quot;);</span>
+<span class="nc" id="L68">            Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L69">        } catch (NotBoundException ex) {</span>
+<span class="nc" id="L70">            System.out.println(&quot;notBoundExeption&quot;);</span>
+<span class="nc" id="L71">            Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L72">        }</span>
+        try {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            for (String g : joinInterface.getAvailableGames()) {</span>
+<span class="nc" id="L75">                gameList.getItems().add(g);</span>
+<span class="nc" id="L76">            }</span>
+<span class="nc" id="L77">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L78">            Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L79">        }</span>
+
+<span class="nc" id="L81">    }</span>
+
+    public void setUp(User loggedIn) {
+<span class="nc" id="L84">        loggedInUser = loggedIn;</span>
+<span class="nc" id="L85">    }</span>
+
+    public void RefreshClick() {
+        try {
+<span class="nc" id="L89">            List&lt;String&gt; games = joinInterface.getAvailableGames();</span>
+<span class="nc" id="L90">            gameList.getItems().clear();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            for (String g : games) {</span>
+<span class="nc" id="L92">                gameList.getItems().add(g);</span>
+<span class="nc" id="L93">            }</span>
+<span class="nc" id="L94">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L95">            Logger.getLogger(JoinGameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L96">        }</span>
+<span class="nc" id="L97">    }</span>
+
+    public static void infoBox(String infoMessage, String titleBar, String headerMessage) {
+<span class="nc" id="L100">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L101">        alert.setTitle(titleBar);</span>
+<span class="nc" id="L102">        alert.setHeaderText(headerMessage);</span>
+<span class="nc" id="L103">        alert.setContentText(infoMessage);</span>
+<span class="nc" id="L104">        alert.showAndWait();</span>
+<span class="nc" id="L105">    }</span>
+
+    public void ConnectClick() throws RemoteException, IOException {
+<span class="nc" id="L108">        String game = (String) gameList.getSelectionModel().getSelectedItem();</span>
+<span class="nc" id="L109">        System.out.println(&quot;trying to connect to: &quot; + game);</span>
+<span class="nc" id="L110">        ILiveGame liveGame = joinInterface.getGameServer(game);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (liveGame != null) {</span>
+<span class="nc" id="L112">            liveGame.Join(loggedInUser);</span>
+<span class="nc" id="L113">            System.out.println(liveGame.getGameInfo());</span>
+<span class="nc" id="L114">            Stage stage = new Stage();</span>
+<span class="nc" id="L115">            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(&quot;/battleship/Views/GameView.fxml&quot;));</span>
+<span class="nc" id="L116">            Parent root1 = (Parent) fxmlLoader.load();</span>
+<span class="nc" id="L117">            GameViewController controller = (GameViewController) fxmlLoader.getController();</span>
+<span class="nc" id="L118">            controller.setUpClient(liveGame);</span>
+<span class="nc" id="L119">            stage.setScene(new Scene(root1));</span>
+<span class="nc" id="L120">            stage.show();</span>
+<span class="nc" id="L121">        } else {</span>
+<span class="nc" id="L122">            infoBox(&quot;Game not available anymore&quot;, &quot;Oops&quot;, &quot;We're Sorry :(&quot;);</span>
+        }
+<span class="nc" id="L124">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

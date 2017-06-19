@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GameViewController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;BattleShip&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">battleship.Views</a> &gt; <span class="el_source">GameViewController.java</span></div><h1>GameViewController.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package battleship.Views;
+
+import Classes.Coordinate;
+import Classes.Game;
+import Classes.Ship;
+import fontyspublisher.IRemotePropertyListener;
+import fontyspublisher.IRemotePublisherForListener;
+import interfaces.IFinishGame;
+import interfaces.IJoin;
+import interfaces.ILiveGame;
+import java.beans.PropertyChangeEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JOptionPane;
+
+/**
+ * FXML Controller class
+ *
+ * @author piete
+ */
+public class GameViewController extends UnicastRemoteObject implements IRemotePropertyListener, Initializable {
+
+    @FXML
+    Label lblGameName;
+    @FXML
+    Pane boardPane;
+    @FXML
+    Pane panePlacement;
+    @FXML
+    Pane paneShoot;
+    @FXML
+    Pane myShipsPane;
+    @FXML
+    TextField txtFireX;
+    @FXML
+    TextField txtFireY;
+    @FXML
+    TextField txtShip1X;
+    @FXML
+    TextField txtShip1Y;
+    @FXML
+    TextField txtShip2X;
+    @FXML
+    TextField txtShip2Y;
+    @FXML
+    TextField txtShip3X;
+    @FXML
+    TextField txtShip3Y;
+    @FXML
+    ChoiceBox HVShip1;
+    @FXML
+    ChoiceBox HVShip2;
+    @FXML
+    ChoiceBox HVShip3;
+    @FXML
+    Button btnFire;
+    @FXML
+    Label lblOpponentName;
+    @FXML
+    Label lblTotalScore;
+    @FXML
+    Label lblHighestScore;
+    @FXML
+    Label lblGamesPlayed;
+
+    ILiveGame game;
+    //0=server,  1=client
+    int player;
+    IRemotePublisherForListener gamePublisher;
+    Button[][] boardBtns;
+    Button[][] MyshipBtns;
+
+    AudioClip explosionSF;
+    AudioClip blubSF;
+    AudioClip hitSF;
+    AudioClip missedSF;
+
+    /**
+     * Initializes the controller class.
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+<span class="nc" id="L117">        blubSF = new AudioClip(this.getClass().getResource(&quot;/Sounds/blub.wav&quot;).toExternalForm());</span>
+<span class="nc" id="L118">        explosionSF = new AudioClip(this.getClass().getResource(&quot;/Sounds/explosion.wav&quot;).toExternalForm());</span>
+<span class="nc" id="L119">        hitSF = new AudioClip(this.getClass().getResource(&quot;/Sounds/hit.mp3&quot;).toExternalForm());</span>
+<span class="nc" id="L120">        missedSF = new AudioClip(this.getClass().getResource(&quot;/Sounds/missed.mp3&quot;).toExternalForm());</span>
+
+<span class="nc" id="L122">        int columns = 5;</span>
+<span class="nc" id="L123">        int rows = 5;</span>
+
+<span class="nc" id="L125">        boardBtns = new Button[columns][rows];</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (int c = 0; c &lt; columns; c++) {</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            for (int r = 0; r &lt; rows; r++) {</span>
+<span class="nc" id="L128">                boardBtns[c][r] = new Button();</span>
+<span class="nc" id="L129">                boardBtns[c][r].setPrefSize(95, 95);</span>
+<span class="nc" id="L130">                boardBtns[c][r].setLayoutY(r * 100);</span>
+<span class="nc" id="L131">                boardBtns[c][r].setLayoutX(c * 100);</span>
+<span class="nc bnc" id="L132" title="All 6 branches missed.">                if (c % 2 == 1 &amp; r % 2 == 1) {</span>
+<span class="nc" id="L133">                    boardBtns[c][r].setStyle(&quot;-fx-color: #80e5ff&quot;);</span>
+<span class="nc bnc" id="L134" title="All 6 branches missed.">                } else if (c % 2 == 0 &amp; r % 2 == 1) {</span>
+<span class="nc" id="L135">                    boardBtns[c][r].setStyle(&quot;-fx-color: #00ccff&quot;);</span>
+<span class="nc bnc" id="L136" title="All 6 branches missed.">                } else if (c % 2 == 1 &amp; r % 2 == 0) {</span>
+<span class="nc" id="L137">                    boardBtns[c][r].setStyle(&quot;-fx-color: #00b8e6&quot;);</span>
+                } else {
+<span class="nc" id="L139">                    boardBtns[c][r].setStyle(&quot;-fx-color: #b3f0ff&quot;);</span>
+                }
+<span class="nc" id="L141">                boardPane.getChildren().add(boardBtns[c][r]);</span>
+
+            }
+        }
+<span class="nc" id="L145">        int shipcolumns = 5;</span>
+<span class="nc" id="L146">        int shipRows = 5;</span>
+<span class="nc" id="L147">        MyshipBtns = new Button[shipcolumns][shipRows];</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        for (int c = 0; c &lt; columns; c++) {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            for (int r = 0; r &lt; rows; r++) {</span>
+<span class="nc" id="L150">                MyshipBtns[c][r] = new Button();</span>
+<span class="nc" id="L151">                MyshipBtns[c][r].setPrefSize(33, 33);</span>
+<span class="nc" id="L152">                MyshipBtns[c][r].setLayoutY(r * 35);</span>
+<span class="nc" id="L153">                MyshipBtns[c][r].setLayoutX(c * 35);</span>
+<span class="nc" id="L154">                MyshipBtns[c][r].setStyle(&quot;-fx-color: #80e5ff&quot;);</span>
+<span class="nc" id="L155">                myShipsPane.getChildren().add(MyshipBtns[c][r]);</span>
+            }
+        }
+<span class="nc" id="L158">    }</span>
+
+    public GameViewController() throws RemoteException {
+<span class="nc" id="L161">        super();</span>
+<span class="nc" id="L162">    }</span>
+
+    public void setUpClient(ILiveGame game) throws RemoteException {
+<span class="nc" id="L165">        this.game = game;</span>
+<span class="nc" id="L166">        player = 1;</span>
+<span class="nc" id="L167">        setUpMain();</span>
+<span class="nc" id="L168">    }</span>
+
+    public void setUpServer(Game game) throws RemoteException {
+<span class="nc" id="L171">        this.game = game;</span>
+<span class="nc" id="L172">        player = 0;</span>
+<span class="nc" id="L173">        setUpMain();</span>
+
+<span class="nc" id="L175">    }</span>
+
+    public void setUpMain() throws RemoteException {
+<span class="nc" id="L178">        paneShoot.setVisible(false);</span>
+<span class="nc" id="L179">        panePlacement.setVisible(false);</span>
+<span class="nc" id="L180">        changeTurn(game.getTurn());</span>
+<span class="nc" id="L181">        lblGameName.setText(game.getGameInfo());</span>
+
+<span class="nc" id="L183">        Registry registry = LocateRegistry.getRegistry(game.getHostIp(), 1098);</span>
+        try {
+<span class="nc" id="L185">            gamePublisher = (IRemotePublisherForListener) registry.lookup(&quot;gamePublisher&quot;);</span>
+<span class="nc" id="L186">        } catch (NotBoundException ex) {</span>
+<span class="nc" id="L187">            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L188">        } catch (AccessException ex) {</span>
+<span class="nc" id="L189">            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L190">        }</span>
+<span class="nc" id="L191">        gamePublisher.subscribeRemoteListener(this, &quot;Turn&quot;);</span>
+<span class="nc" id="L192">        gamePublisher.subscribeRemoteListener(this, &quot;Winner&quot;);</span>
+<span class="nc" id="L193">        HVShip1.getItems().clear();</span>
+<span class="nc" id="L194">        HVShip2.getItems().clear();</span>
+<span class="nc" id="L195">        HVShip3.getItems().clear();</span>
+<span class="nc" id="L196">        HVShip1.getItems().add(&quot;Horizontal&quot;);</span>
+<span class="nc" id="L197">        HVShip2.getItems().add(&quot;Horizontal&quot;);</span>
+<span class="nc" id="L198">        HVShip3.getItems().add(&quot;Horizontal&quot;);</span>
+<span class="nc" id="L199">        HVShip1.getItems().add(&quot;Vertical&quot;);</span>
+<span class="nc" id="L200">        HVShip2.getItems().add(&quot;Vertical&quot;);</span>
+<span class="nc" id="L201">        HVShip3.getItems().add(&quot;Vertical&quot;);</span>
+<span class="nc" id="L202">    }</span>
+
+    public void changeTurnTest() {
+        try {
+<span class="nc" id="L206">            game.getGameInfo();</span>
+<span class="nc" id="L207">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L208">            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L209">        }</span>
+<span class="nc" id="L210">    }</span>
+
+    public void btnFireCLick() throws RemoteException, UnsupportedAudioFileException {
+<span class="nc" id="L213">        Coordinate C = new Coordinate(Integer.parseInt(txtFireX.getText()) - 1, Integer.parseInt(txtFireY.getText()) - 1);</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (!game.checkShot(C)) {</span>
+<span class="nc" id="L215">            boolean hit = game.fireShot(C);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">            if (hit) {</span>
+<span class="nc" id="L217">                boardBtns[C.getX()][C.getY()].setStyle(&quot;-fx-color: red&quot;);</span>
+<span class="nc" id="L218">                explosionSF.play();</span>
+            } else {
+<span class="nc" id="L220">                blubSF.play();</span>
+            }
+<span class="nc" id="L222">        } else {</span>
+<span class="nc" id="L223">            infoBox(&quot;You''ve already hit this coordinate&quot;, &quot;Try Again&quot;, &quot;Oops!&quot;);</span>
+        }
+<span class="nc" id="L225">    }</span>
+
+    void playSound(String soundFile) throws MalformedURLException, UnsupportedAudioFileException, IOException, LineUnavailableException {
+//    File f = new File(&quot;/&quot;+soundFile);
+//    AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());  
+//    Clip clip = AudioSystem.getClip();
+//    clip.open(audioIn);
+//    clip.start();
+<span class="nc" id="L233">    }</span>
+
+    public static void infoBox(String infoMessage, String titleBar, String headerMessage) {
+<span class="nc" id="L236">        Alert alert = new Alert(AlertType.INFORMATION);</span>
+<span class="nc" id="L237">        alert.setTitle(titleBar);</span>
+<span class="nc" id="L238">        alert.setHeaderText(headerMessage);</span>
+<span class="nc" id="L239">        alert.setContentText(infoMessage);</span>
+<span class="nc" id="L240">        alert.showAndWait();</span>
+<span class="nc" id="L241">    }</span>
+
+    public void changeTurn(int turn) throws RemoteException {
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (turn == player) {</span>
+<span class="nc" id="L245">            txtFireX.setText(&quot;&quot;);</span>
+<span class="nc" id="L246">            txtFireY.setText(&quot;&quot;);</span>
+<span class="nc" id="L247">            txtFireX.setEditable(true);</span>
+<span class="nc" id="L248">            txtFireY.setEditable(true);</span>
+<span class="nc" id="L249">            btnFire.setDisable(false);</span>
+<span class="nc" id="L250">            System.out.println(&quot;Turn Changed: My Turn&quot;);</span>
+<span class="nc" id="L251">            System.out.println(&quot;im player&quot; + player);</span>
+<span class="nc" id="L252">            panePlacement.setVisible(false);</span>
+<span class="nc" id="L253">            paneShoot.setVisible(true);</span>
+<span class="nc" id="L254">            Coordinate hit = game.getLastTurn();</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">            if (hit != null) {</span>
+<span class="nc" id="L256">                MyshipBtns[hit.getX()][hit.getY()].setStyle(&quot;-fx-color: red&quot;);</span>
+<span class="nc" id="L257">                hitSF.play();</span>
+            } else {
+<span class="nc" id="L259">                missedSF.play();</span>
+            }
+<span class="nc" id="L261">        } else {</span>
+<span class="nc" id="L262">            txtFireX.setText(&quot;&quot;);</span>
+<span class="nc" id="L263">            txtFireY.setText(&quot;&quot;);</span>
+<span class="nc" id="L264">            txtFireX.setEditable(false);</span>
+<span class="nc" id="L265">            txtFireY.setEditable(false);</span>
+<span class="nc" id="L266">            btnFire.setDisable(true);</span>
+<span class="nc" id="L267">            System.out.println(&quot;Turn Changed: Opponents Turn&quot;);</span>
+<span class="nc" id="L268">            System.out.println(&quot;im player&quot; + player);</span>
+<span class="nc" id="L269">            panePlacement.setVisible(false);</span>
+<span class="nc" id="L270">            paneShoot.setVisible(true);</span>
+        }
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        if (player + 10 == turn) {</span>
+<span class="nc" id="L273">            panePlacement.setVisible(true);</span>
+<span class="nc" id="L274">            paneShoot.setVisible(false);</span>
+        }
+
+<span class="nc" id="L277">    }</span>
+
+    public void placeShipsClick() throws RemoteException {
+<span class="nc" id="L280">        Ship[] ships = new Ship[3];</span>
+<span class="nc" id="L281">        boolean ship1Ok = false;</span>
+<span class="nc" id="L282">        boolean ship2Ok = false;</span>
+<span class="nc" id="L283">        boolean ship3Ok = false;</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">        if (HVShip1.getSelectionModel().getSelectedIndex() == 0) {</span>
+<span class="nc bnc" id="L285" title="All 4 branches missed.">            if (Integer.parseInt(txtShip1X.getText()) &lt; 5 &amp;&amp; Integer.parseInt(txtShip1Y.getText()) &lt; 6) {</span>
+<span class="nc" id="L286">                ship1Ok = true;</span>
+            }
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        } else if (HVShip1.getSelectionModel().getSelectedIndex() == 1) {</span>
+<span class="nc bnc" id="L289" title="All 4 branches missed.">            if (Integer.parseInt(txtShip1X.getText()) &lt; 6 &amp;&amp; Integer.parseInt(txtShip1Y.getText()) &lt; 5) {</span>
+<span class="nc" id="L290">                ship1Ok = true;</span>
+            }
+        }
+
+<span class="nc bnc" id="L294" title="All 2 branches missed.">        if (HVShip2.getSelectionModel().getSelectedIndex() == 0) {</span>
+<span class="nc bnc" id="L295" title="All 4 branches missed.">            if (Integer.parseInt(txtShip2X.getText()) &lt; 4 &amp;&amp; Integer.parseInt(txtShip2Y.getText()) &lt; 6) {</span>
+<span class="nc" id="L296">                ship2Ok = true;</span>
+            }
+<span class="nc bnc" id="L298" title="All 2 branches missed.">        } else if (HVShip2.getSelectionModel().getSelectedIndex() == 1) {</span>
+<span class="nc bnc" id="L299" title="All 4 branches missed.">            if (Integer.parseInt(txtShip2X.getText()) &lt; 6 &amp;&amp; Integer.parseInt(txtShip2Y.getText()) &lt; 4) {</span>
+<span class="nc" id="L300">                ship2Ok = true;</span>
+            }
+        }
+
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        if (HVShip3.getSelectionModel().getSelectedIndex() == 0) {</span>
+<span class="nc bnc" id="L305" title="All 4 branches missed.">            if (Integer.parseInt(txtShip3X.getText()) &lt; 3 &amp;&amp; Integer.parseInt(txtShip3Y.getText()) &lt; 6) {</span>
+<span class="nc" id="L306">                ship3Ok = true;</span>
+            }
+<span class="nc bnc" id="L308" title="All 2 branches missed.">        } else if (HVShip3.getSelectionModel().getSelectedIndex() == 1) {</span>
+<span class="nc bnc" id="L309" title="All 4 branches missed.">            if (Integer.parseInt(txtShip3X.getText()) &lt; 6 &amp;&amp; Integer.parseInt(txtShip3Y.getText()) &lt; 3) {</span>
+<span class="nc" id="L310">                ship3Ok = true;</span>
+            }
+        }
+
+<span class="nc bnc" id="L314" title="All 6 branches missed.">        if (ship1Ok &amp;&amp; ship2Ok &amp;&amp; ship3Ok) {</span>
+<span class="nc" id="L315">            Coordinate[] ship1 = new Coordinate[2];</span>
+<span class="nc" id="L316">            ship1[0] = new Coordinate(Integer.parseInt(txtShip1X.getText()) - 1, Integer.parseInt(txtShip1Y.getText()) - 1);</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">            if (HVShip1.getSelectionModel().getSelectedIndex() == 0) {</span>
+<span class="nc" id="L318">                ship1[1] = new Coordinate(Integer.parseInt(txtShip1X.getText()), Integer.parseInt(txtShip1Y.getText()) - 1);</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">            } else if (HVShip1.getSelectionModel().getSelectedIndex() == 1) {</span>
+<span class="nc" id="L320">                ship1[1] = new Coordinate(Integer.parseInt(txtShip1X.getText()) - 1, Integer.parseInt(txtShip1Y.getText()));</span>
+            }
+<span class="nc" id="L322">            Coordinate[] ship2 = new Coordinate[3];</span>
+<span class="nc" id="L323">            ship2[0] = new Coordinate(Integer.parseInt(txtShip2X.getText()) - 1, Integer.parseInt(txtShip2Y.getText()) - 1);</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">            if (HVShip2.getSelectionModel().getSelectedIndex() == 0) {</span>
+<span class="nc" id="L325">                ship2[1] = new Coordinate(Integer.parseInt(txtShip2X.getText()), Integer.parseInt(txtShip2Y.getText()) - 1);</span>
+<span class="nc" id="L326">                ship2[2] = new Coordinate(Integer.parseInt(txtShip2X.getText()) + 1, Integer.parseInt(txtShip2Y.getText()) - 1);</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">            } else if (HVShip2.getSelectionModel().getSelectedIndex() == 1) {</span>
+<span class="nc" id="L328">                ship2[1] = new Coordinate(Integer.parseInt(txtShip2X.getText()) - 1, Integer.parseInt(txtShip2Y.getText()));</span>
+<span class="nc" id="L329">                ship2[2] = new Coordinate(Integer.parseInt(txtShip2X.getText()) - 1, Integer.parseInt(txtShip2Y.getText()) + 1);</span>
+            }
+<span class="nc" id="L331">            Coordinate[] ship3 = new Coordinate[4];</span>
+<span class="nc" id="L332">            ship3[0] = new Coordinate(Integer.parseInt(txtShip3X.getText()) - 1, Integer.parseInt(txtShip3Y.getText()) - 1);</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">            if (HVShip3.getSelectionModel().getSelectedIndex() == 0) {</span>
+<span class="nc" id="L334">                ship3[1] = new Coordinate(Integer.parseInt(txtShip3X.getText()), Integer.parseInt(txtShip3Y.getText()) - 1);</span>
+<span class="nc" id="L335">                ship3[2] = new Coordinate(Integer.parseInt(txtShip3X.getText()) + 1, Integer.parseInt(txtShip3Y.getText()) - 1);</span>
+<span class="nc" id="L336">                ship3[3] = new Coordinate(Integer.parseInt(txtShip3X.getText()) + 2, Integer.parseInt(txtShip3Y.getText()) - 1);</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">            } else if (HVShip3.getSelectionModel().getSelectedIndex() == 1) {</span>
+<span class="nc" id="L338">                ship3[1] = new Coordinate(Integer.parseInt(txtShip3X.getText()) - 1, Integer.parseInt(txtShip3Y.getText()));</span>
+<span class="nc" id="L339">                ship3[2] = new Coordinate(Integer.parseInt(txtShip3X.getText()) - 1, Integer.parseInt(txtShip3Y.getText()) + 1);</span>
+<span class="nc" id="L340">                ship3[3] = new Coordinate(Integer.parseInt(txtShip3X.getText()) - 1, Integer.parseInt(txtShip3Y.getText()) + 2);</span>
+            }
+<span class="nc" id="L342">            ships[0] = new Ship(ship1, &quot;small&quot;);</span>
+<span class="nc" id="L343">            ships[1] = new Ship(ship2, &quot;medium&quot;);</span>
+<span class="nc" id="L344">            ships[2] = new Ship(ship3, &quot;large&quot;);</span>
+<span class="nc" id="L345">            boolean free1 = ships[0].checkFree(ships[1].getCoordinates());</span>
+<span class="nc" id="L346">            boolean free2 = ships[1].checkFree(ships[2].getCoordinates());</span>
+<span class="nc" id="L347">            boolean free3 = ships[0].checkFree(ships[2].getCoordinates());</span>
+<span class="nc bnc" id="L348" title="All 6 branches missed.">            if (free1 &amp;&amp; free2 &amp;&amp; free3) {</span>
+<span class="nc" id="L349">                game.addShips(ships, player);</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">                for (Ship s : game.getMyShips(player)) {</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">                    for (Coordinate c : s.getCoordinates()) {</span>
+<span class="nc" id="L352">                        MyshipBtns[c.getX()][c.getY()].setStyle(&quot;-fx-color: black&quot;);</span>
+                    }
+                }
+            } else {
+<span class="nc" id="L356">                JOptionPane.showMessageDialog(null, &quot;Your ships cross each other&quot;, &quot;sorry&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+            }
+<span class="nc" id="L358">        } else {</span>
+<span class="nc" id="L359">            JOptionPane.showMessageDialog(null, &quot;Your ships are not placed on the board&quot;, &quot;sorry&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+        }
+<span class="nc" id="L361">        String[] info = game.getOpponentInfo(player).split(&quot;;&quot;);</span>
+<span class="nc" id="L362">        lblOpponentName.setText(&quot;UserName: &quot; + info[0]);</span>
+<span class="nc" id="L363">        lblTotalScore.setText(&quot;Total score: &quot; + info[1]);</span>
+<span class="nc" id="L364">        lblHighestScore.setText(&quot;Highest Score: &quot; + info[2]);</span>
+<span class="nc" id="L365">        lblGamesPlayed.setText(&quot;Played Games: &quot; + info[3]);</span>
+<span class="nc" id="L366">    }</span>
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) throws RemoteException {
+<span class="nc" id="L370">        int Old = (int) evt.getOldValue();</span>
+<span class="nc" id="L371">        int New = (int) evt.getNewValue();</span>
+<span class="nc" id="L372">        System.out.println(Integer.toString(New));</span>
+<span class="nc bnc" id="L373" title="All 4 branches missed.">        if (New != 3 &amp;&amp; New != 4) {</span>
+<span class="nc" id="L374">            System.out.println(&quot;old: &quot; + Old + &quot; new: &quot; + New);</span>
+<span class="nc" id="L375">            changeTurn(New);</span>
+        } else {
+<span class="nc" id="L377">            int playerwin = player + 3;</span>
+<span class="nc" id="L378">            System.out.println(Integer.toString(playerwin) + &quot; : &quot; + player);</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">            if (New == playerwin) {</span>
+<span class="nc" id="L380">                System.out.println(&quot;won&quot;);</span>
+<span class="nc" id="L381">                JOptionPane.showMessageDialog(null, &quot;You''ve won the war&quot;, &quot;Won&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L382">                Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();</span>
+<span class="nc" id="L383">                stage2.close();</span>
+<span class="nc" id="L384">            } else {</span>
+<span class="nc" id="L385">                System.out.println(&quot;lost&quot;);</span>
+<span class="nc" id="L386">                JOptionPane.showMessageDialog(null, &quot;You''ve lost the war&quot;, &quot;Lost&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L387">                Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();</span>
+<span class="nc" id="L388">                stage2.close();</span>
+            }
+<span class="nc" id="L390">            Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();</span>
+<span class="nc" id="L391">            stage2.close();</span>
+        }
+
+<span class="nc" id="L394">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

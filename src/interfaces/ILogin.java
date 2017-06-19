@@ -40,10 +40,4 @@ public interface ILogin extends Remote{
      */
     public boolean register(String username, String password,String email)throws RemoteException;
 
-    /**
-     * get the user with the specified username
-     * @param username username of the user to retrieve from the server
-     * @return User or null
-     */
-    public User getUser(String username)throws RemoteException;
 }

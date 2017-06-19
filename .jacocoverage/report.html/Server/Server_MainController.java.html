@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Server_MainController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;BattleShip&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Server</a> &gt; <span class="el_source">Server_MainController.java</span></div><h1>Server_MainController.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Server;
+
+import Server.Classes.JoinGames;
+import battleship.Views.GameViewController;
+import battleship.Views.StartServerViewController;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.rmi.AccessException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
+import javafx.stage.Stage;
+
+/**
+ * FXML Controller class
+ *
+ * @author piete
+ */
+<span class="nc" id="L39">public class Server_MainController implements Initializable {</span>
+
+    /**
+     * Initializes the controller class.
+     */
+    @FXML
+    ListView gameList;
+    @FXML
+    ProgressIndicator statusIndicator;
+<span class="nc" id="L48">    boolean running = false;</span>
+<span class="nc" id="L49">    int progress = 5;</span>
+<span class="nc" id="L50">    private Registry registry = null;</span>
+    JoinGames joinGames;
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        try {
+<span class="nc" id="L56">            joinGames = new JoinGames();</span>
+<span class="nc" id="L57">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L58">            Logger.getLogger(Server_MainController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L59">        }</span>
+<span class="nc" id="L60">        Timer timer = new Timer();</span>
+<span class="nc" id="L61">        class PeriodiekeActie extends java.util.TimerTask {</span>
+
+            @Override
+            public void run() {
+<span class="nc" id="L65">                Platform.runLater(new Runnable() {</span>
+                    @Override
+                    public void run() {
+<span class="nc" id="L68">                        gameList.getItems().clear();</span>
+                        try {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                            for (String game : joinGames.getAvailableGames()) {</span>
+<span class="nc" id="L71">                                gameList.getItems().add(game);</span>
+<span class="nc" id="L72">                            }</span>
+<span class="nc" id="L73">                        } catch (RemoteException ex) {</span>
+<span class="nc" id="L74">                            Logger.getLogger(Server_MainController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L75">                        }</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                        if (running) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">                            if (progress &lt; 90) {</span>
+<span class="nc" id="L78">                                progress = progress + 1;</span>
+                            } else {
+<span class="nc" id="L80">                                progress = 5;</span>
+                            }
+<span class="nc" id="L82">                            statusIndicator.setProgress(progress/100);</span>
+                        }
+<span class="nc" id="L84">                    }</span>
+                });
+<span class="nc" id="L86">            }</span>
+        }
+<span class="nc" id="L88">        timer.scheduleAtFixedRate(new PeriodiekeActie(), 0, 200);</span>
+<span class="nc" id="L89">    }</span>
+
+    public void startServerClick() throws RemoteException {
+        try {
+<span class="nc" id="L93">            registry = LocateRegistry.createRegistry(1099);</span>
+<span class="nc" id="L94">            System.out.println(&quot;Registry created on port 1099&quot;);</span>
+<span class="nc" id="L95">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L96">            Logger.getLogger(BattleShip_Server.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L97">            System.out.println(&quot;Registry creating failed&quot;);</span>
+<span class="nc" id="L98">        }</span>
+<span class="nc" id="L99">        joinGames = new JoinGames();</span>
+        try {
+<span class="nc" id="L101">            registry.rebind(&quot;MainServer&quot;, joinGames);</span>
+<span class="nc" id="L102">            System.out.println(&quot;JoinGames Binded&quot;);</span>
+<span class="nc" id="L103">        } catch (AccessException ex) {</span>
+<span class="nc" id="L104">            System.out.println(&quot;JoinGames NOT Binded&quot;);</span>
+<span class="nc" id="L105">            Logger.getLogger(Server_MainController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L106">        }</span>
+
+        InetAddress localhost;
+        try {
+<span class="nc" id="L110">            localhost = InetAddress.getLocalHost();</span>
+<span class="nc" id="L111">            System.out.println(&quot;IP Address: &quot; + localhost.getHostAddress());</span>
+<span class="nc" id="L112">        } catch (UnknownHostException ex) {</span>
+<span class="nc" id="L113">            Logger.getLogger(BattleShip_Server.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L114">        }</span>
+<span class="nc" id="L115">        running = true;</span>
+<span class="nc" id="L116">    }</span>
+
+    public void stopServerClick() {
+
+<span class="nc" id="L120">    }</span>
+
+    public void refreshClick() throws RemoteException {
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        for (String g : joinGames.getAvailableGames()) {</span>
+<span class="nc" id="L124">            gameList.getItems().add(g);</span>
+<span class="nc" id="L125">        }</span>
+<span class="nc" id="L126">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

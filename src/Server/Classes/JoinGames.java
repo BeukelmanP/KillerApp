@@ -89,15 +89,14 @@ public class JoinGames extends UnicastRemoteObject implements IJoin, ICreateGame
 
     @Override
     public boolean createGame(String ipAdress, String gameName, int portNumber) throws RemoteException {
-        String newgame = gameName + ";" + ipAdress + ";" + portNumber;
-        games.add(newgame);
-        System.out.println("game added!!!!!");
-        return true;
-    }
-
-    @Override
-    public boolean startGame(String gameName, String ipAdress) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (ipAdress != null && ipAdress != "" && gameName != "" && gameName != null && portNumber != 1099 && portNumber > 0) {
+            String newgame = gameName + ";" + ipAdress + ";" + portNumber;
+            games.add(newgame);
+            System.out.println("game added!!!!!");
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -108,7 +107,6 @@ public class JoinGames extends UnicastRemoteObject implements IJoin, ICreateGame
                 if (u.getUsername().equals(userName)) {
                     return u.checkPassword(password);
                 }
-
             }
         }
         return null;
@@ -121,11 +119,6 @@ public class JoinGames extends UnicastRemoteObject implements IJoin, ICreateGame
 
     @Override
     public boolean register(String username, String password, String email) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public User getUser(String username) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

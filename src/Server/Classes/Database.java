@@ -61,9 +61,7 @@ public class Database {
         } else {
             try {
                 getConnection();
-            } catch (SQLException ex) {
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             }
             users = getUsers();
@@ -72,22 +70,20 @@ public class Database {
     }
 
     public void updateScore(int userID, int totalScore) {
-        String query = "UPDATE scores SET Score = 120 WHERE UserID =1;";
+        String query = "UPDATE scores SET Score = ? WHERE UserID =?;";
         if (myConn != null) {
             try {
                 pstmt = myConn.prepareStatement(query);
-                pstmt.setInt(0, totalScore);
-                pstmt.setInt(1, userID);
+                pstmt.setInt(1, totalScore);
+                pstmt.setInt(2, userID);
                 pstmt.executeUpdate();
             } catch (SQLException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
-                getConnection();
-            } catch (SQLException ex) {
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+                this.getConnection();
+            } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             }
             updateScore(userID, totalScore);
@@ -104,7 +100,7 @@ public class Database {
             }
             if (pstmt != null) {
                 pstmt.close();
-            }
+          }
             System.out.println("Closing connection to database...");
             return true;
         } catch (SQLException ex) {

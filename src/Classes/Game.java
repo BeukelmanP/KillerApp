@@ -51,9 +51,13 @@ public class Game extends UnicastRemoteObject implements ILiveGame {
 //        serverShips[0] = new Ship(coordinates2, "medium");
     }
 
+    public void setGameName(String name) {
+        this.Name = name;
+    }
+
     @Override
     public String getGameInfo() throws RemoteException {
-        return Name + "test";
+        return Name;
     }
 
     @Override
@@ -210,11 +214,11 @@ public class Game extends UnicastRemoteObject implements ILiveGame {
 
     public void addShips(Ship[] ships, int player) throws RemoteException {
         if (player == 0) {
-            turn = 11;
+            changeTurn();
             serverShips = ships;
             gamePublisher.inform("Turn", 0, 11);
         } else if (player == 1) {
-            turn = 0;
+            changeTurn();
             clientShips = ships;
             gamePublisher.inform("Turn", 0, 0);
         }

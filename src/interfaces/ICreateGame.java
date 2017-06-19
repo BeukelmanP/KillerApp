@@ -23,11 +23,4 @@ public interface ICreateGame  extends Remote{
      */
     public boolean createGame(String ipAdress, String gameName, int portNumber)throws RemoteException;
 
-    /**
-     * removes game from server
-     * @param gameName gamename of game
-     * @param ipAdress ipadress of host as extra check
-     * @return true or false
-     */
-    public boolean startGame(String gameName, String ipAdress)throws RemoteException;
-}
+   }
