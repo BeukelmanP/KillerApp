@@ -170,7 +170,7 @@ public class Game extends UnicastRemoteObject implements ILiveGame {
         }
     }
 
-    public void sendScores(int winner) {
+    public void sendScores(int winner) throws RemoteException {
         Registry registry = null;
         IFinishGame finishInterface = null;
         try {

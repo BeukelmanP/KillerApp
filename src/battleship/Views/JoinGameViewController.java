@@ -48,7 +48,7 @@ public class JoinGameViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-            registry = LocateRegistry.getRegistry("192.168.192.37", 1099);
+            registry = LocateRegistry.getRegistry("192.168.31.1", 1099);
             System.out.println("registry Binded");
         } catch (RemoteException ex) {
             System.out.println("Cannot locate registry");

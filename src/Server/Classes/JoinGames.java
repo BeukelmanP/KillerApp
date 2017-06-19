@@ -115,22 +115,22 @@ public class JoinGames extends UnicastRemoteObject implements IJoin, ICreateGame
     }
 
     @Override
-    public boolean logout(User userToLogout) {
+    public boolean logout(User userToLogout) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean register(String username, String password, String email) {
+    public boolean register(String username, String password, String email) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public User getUser(String username) {
+    public User getUser(String username) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void updateScores(User user1, User user2, int score1, int score2) {
+    public void updateScores(User user1, User user2, int score1, int score2) throws RemoteException {
         for (User u : users) {
             if (u.getUserId() == user1.getUserId()) {
                 u.updateScore(score1);

@@ -39,6 +39,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -378,13 +379,16 @@ public class GameViewController extends UnicastRemoteObject implements IRemotePr
             if (New == playerwin) {
                 System.out.println("won");
                 JOptionPane.showMessageDialog(null, "You''ve won the war", "Won", JOptionPane.INFORMATION_MESSAGE);
+                Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
+                stage2.close();
             } else {
                 System.out.println("lost");
                 JOptionPane.showMessageDialog(null, "You''ve lost the war", "Lost", JOptionPane.INFORMATION_MESSAGE);
+                Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
+                stage2.close();
             }
-            if (player == 0) {
-                
-            }
+            Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
+            stage2.close();
         }
 
     }

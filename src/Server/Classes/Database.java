@@ -71,10 +71,29 @@ public class Database {
         return users;
     }
 
-    public void updateScore(int userID, int totalScore){
-        
+    public void updateScore(int userID, int totalScore) {
+        String query = "UPDATE scores SET Score = 120 WHERE UserID =1;";
+        if (myConn != null) {
+            try {
+                pstmt = myConn.prepareStatement(query);
+                pstmt.setInt(0, totalScore);
+                pstmt.setInt(1, userID);
+                pstmt.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                getConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            updateScore(userID, totalScore);
+        }
     }
-    
+
     public boolean closeConnection() {
         try {
             if (myRs != null) {
