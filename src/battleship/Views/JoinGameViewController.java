@@ -115,12 +115,26 @@ public class JoinGameViewController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/battleship/Views/GameView.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
             GameViewController controller = (GameViewController) fxmlLoader.getController();
-            controller.setUpClient(liveGame);
+            controller.setUpClient(liveGame, loggedInUser);
             stage.setScene(new Scene(root1));
             stage.show();
+            Stage stage2 = (Stage) gameList.getScene().getWindow();
+            stage2.close();
         } else {
             infoBox("Game not available anymore", "Oops", "We're Sorry :(");
         }
+    }
+
+    public void backbtnClick() throws IOException {
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/battleship/Views/MainScreen.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        MainScreenController controller = (MainScreenController) fxmlLoader.getController();
+        controller.setUp(loggedInUser);
+        stage.setScene(new Scene(root1));
+        stage.show();
+        Stage stage2 = (Stage) gameList.getScene().getWindow();
+        stage2.close();
     }
 
 }

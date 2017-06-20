@@ -69,13 +69,43 @@ public class Database {
         return users;
     }
 
-    public void updateScore(int userID, int totalScore) {
-        String query = "UPDATE scores SET Score = ? WHERE UserID =?;";
+    public void insertUser(int UserID, String username, String password, String email) {
+        String query = "INSERT INTO user VALUES (?,?,?,?);";
+        String query2 = "INSERT INTO scores VALUES (?,0,0,0);";
+        if (myConn != null) {
+            try {
+                pstmt = myConn.prepareStatement(query);
+                pstmt.setInt(1, UserID);
+                pstmt.setString(2, username);
+                pstmt.setString(3, password);
+                pstmt.setString(4, email);
+                pstmt.execute();
+                PreparedStatement pstmt2 = myConn.prepareStatement(query2);
+                pstmt2.setInt(1, UserID);
+                pstmt2.execute();
+            } catch (SQLException ex) {
+                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                this.getConnection();
+            } catch (SQLException | ClassNotFoundException ex) {
+                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            insertUser(UserID, username, password, email);
+        }
+    }
+
+    public void updateScore(int userID, int totalScore, int highestScore, int gamesPlayed) {
+        System.out.println("UPDATE SCORES DB");
+        String query = "UPDATE scores SET Score = ?,GamesPlayed = ?, HighestGameScore=? WHERE UserID =?;";
         if (myConn != null) {
             try {
                 pstmt = myConn.prepareStatement(query);
                 pstmt.setInt(1, totalScore);
-                pstmt.setInt(2, userID);
+                pstmt.setInt(2, gamesPlayed);
+                pstmt.setInt(3, highestScore);
+                pstmt.setInt(4, userID);
                 pstmt.executeUpdate();
             } catch (SQLException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,7 +116,7 @@ public class Database {
             } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             }
-            updateScore(userID, totalScore);
+            updateScore(userID, totalScore, gamesPlayed, highestScore);
         }
     }
 
@@ -100,7 +130,7 @@ public class Database {
             }
             if (pstmt != null) {
                 pstmt.close();
-          }
+            }
             System.out.println("Closing connection to database...");
             return true;
         } catch (SQLException ex) {

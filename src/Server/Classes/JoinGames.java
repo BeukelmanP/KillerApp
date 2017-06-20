@@ -118,22 +118,52 @@ public class JoinGames extends UnicastRemoteObject implements IJoin, ICreateGame
     }
 
     @Override
-    public boolean register(String username, String password, String email) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String register(String username, String password, String email) throws RemoteException {
+        boolean ok = true;
+        int userID = 0;
+        for (User u : users) {
+            if (u.getUsername().equals(username)) {
+                ok = false;
+                return "Username";
+            }
+            if (u.getUserId() > userID) {
+                userID = u.getUserId();
+            }
+        }
+        userID++;
+        users.add(new User(userID, username, password, email, 0, 0, 0));
+        database.insertUser(userID, username, password, email);
+        return "OK";
     }
 
     @Override
     public void updateScores(User user1, User user2, int score1, int score2) throws RemoteException {
+        System.out.println("UPDATESCORE SERVER");
         for (User u : users) {
             if (u.getUserId() == user1.getUserId()) {
                 u.updateScore(score1);
-                database.updateScore(u.getUserId(), u.getTotalScore());
+                System.out.println("1UPDATED");
+                database.updateScore(u.getUserId(), u.getTotalScore(), u.getHighestScore(), u.getPlayedGames());
             }
             if (u.getUserId() == user2.getUserId()) {
                 u.updateScore(score2);
-                database.updateScore(u.getUserId(), u.getTotalScore());
+                System.out.println("2UPDATED");
+                database.updateScore(u.getUserId(), u.getTotalScore(), u.getHighestScore(), u.getPlayedGames());
             }
         }
+
+    }
+
+    @Override
+    public boolean checkAuthorized(int key, String username) throws RemoteException {
+        for (User u : users) {
+            if (username.equals(u.getUsername())) {
+                if (u.getSessionId() == key) {
+                    return true;
+                }
+            }
+        }
+        return false;
 
     }
 

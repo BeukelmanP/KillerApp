@@ -38,6 +38,7 @@ public interface ILogin extends Remote{
      * @param email emailadress of the user who wants to register
      * @return true or false
      */
-    public boolean register(String username, String password,String email)throws RemoteException;
+    public String register(String username, String password,String email)throws RemoteException;
 
+    public boolean checkAuthorized(int key,String username) throws RemoteException;
 }

@@ -8,6 +8,7 @@ package battleship.Views;
 import Classes.Coordinate;
 import Classes.Game;
 import Classes.Ship;
+import Classes.User;
 import fontyspublisher.IRemotePropertyListener;
 import fontyspublisher.IRemotePublisherForListener;
 import interfaces.IFinishGame;
@@ -27,8 +28,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -104,6 +109,8 @@ public class GameViewController extends UnicastRemoteObject implements IRemotePr
     Button[][] boardBtns;
     Button[][] MyshipBtns;
 
+    User loggedInUser;
+
     AudioClip explosionSF;
     AudioClip blubSF;
     AudioClip hitSF;
@@ -161,13 +168,15 @@ public class GameViewController extends UnicastRemoteObject implements IRemotePr
         super();
     }
 
-    public void setUpClient(ILiveGame game) throws RemoteException {
+    public void setUpClient(ILiveGame game, User u) throws RemoteException {
+        this.loggedInUser = u;
         this.game = game;
         player = 1;
         setUpMain();
     }
 
-    public void setUpServer(Game game) throws RemoteException {
+    public void setUpServer(Game game, User u) throws RemoteException {
+        this.loggedInUser = u;
         this.game = game;
         player = 0;
         setUpMain();
@@ -379,13 +388,45 @@ public class GameViewController extends UnicastRemoteObject implements IRemotePr
             if (New == playerwin) {
                 System.out.println("won");
                 JOptionPane.showMessageDialog(null, "You''ve won the war", "Won", JOptionPane.INFORMATION_MESSAGE);
-                Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
-                stage2.close();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Stage stage = new Stage();
+                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/battleship/Views/MainScreen.fxml"));
+                            Parent root1 = (Parent) fxmlLoader.load();
+                            MainScreenController controller = (MainScreenController) fxmlLoader.getController();
+                            controller.setUp(loggedInUser);
+                            stage.setScene(new Scene(root1));
+                            stage.show();
+                            Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
+                            stage2.close();
+                        } catch (IOException ex) {
+                            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
             } else {
                 System.out.println("lost");
                 JOptionPane.showMessageDialog(null, "You''ve lost the war", "Lost", JOptionPane.INFORMATION_MESSAGE);
-                Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
-                stage2.close();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Stage stage = new Stage();
+                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/battleship/Views/MainScreen.fxml"));
+                            Parent root1 = (Parent) fxmlLoader.load();
+                            MainScreenController controller = (MainScreenController) fxmlLoader.getController();
+                            controller.setUp(loggedInUser);
+                            stage.setScene(new Scene(root1));
+                            stage.show();
+                            Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
+                            stage2.close();
+                        } catch (IOException ex) {
+                            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
             }
             Stage stage2 = (Stage) lblOpponentName.getScene().getWindow();
             stage2.close();

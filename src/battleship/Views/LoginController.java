@@ -24,6 +24,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
 
@@ -38,6 +39,14 @@ public class LoginController implements Initializable {
     TextField txtUsername;
     @FXML
     PasswordField txtPassword;
+    @FXML
+    TextField registerUsername;
+    @FXML
+    PasswordField registerPassword;
+    @FXML
+    TextField registerEmail;
+    @FXML
+    Pane registerPane;
 
     Registry registry = null;
     ILogin loginInterface = null;
@@ -47,6 +56,7 @@ public class LoginController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        registerPane.setVisible(false);
         try {
             registry = LocateRegistry.getRegistry("192.168.31.1", 1099);
             System.out.println("registry Binded");
@@ -87,6 +97,22 @@ public class LoginController implements Initializable {
         } else {
             JOptionPane.showMessageDialog(null, "Your username or password are not correct", "sorry", JOptionPane.INFORMATION_MESSAGE);
 
+        }
+    }
+
+    public void noAccountClick() {
+        registerPane.setVisible(true);
+    }
+
+    public void registerClick() throws RemoteException {
+        boolean ok = true;
+        if ("".equals(registerUsername.getText()) | "".equals(registerPassword.getText()) | "".equals(registerEmail.getText())) {
+            JOptionPane.showMessageDialog(null, "You have to fill in all the required fields", "sorry", JOptionPane.INFORMATION_MESSAGE);
+            ok = false;
+        }
+        if (ok) {
+            System.out.println("ok");
+            loginInterface.register(registerUsername.getText(), registerPassword.getText(), registerEmail.getText());
         }
     }
 

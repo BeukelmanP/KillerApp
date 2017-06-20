@@ -15,7 +15,7 @@
         <Font size="22.0" />
       </font>
     </Label>
-    <Button layoutX="14.0" layoutY="68.0" mnemonicParsing="false" onMouseClicked="#openServer" prefWidth="215.0" text="Start Server" />
+    <Button fx:id="startServerBtn" layoutX="14.0" layoutY="68.0" mnemonicParsing="false" onMouseClicked="#openServer" prefWidth="215.0" text="Start Server" />
     <Button layoutX="14.0" layoutY="108.0" mnemonicParsing="false" onMouseClicked="#openSearch" prefWidth="215.0" text="Join open Game" />
     <ImageView fitHeight="229.0" fitWidth="229.0" layoutX="7.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
       <image>

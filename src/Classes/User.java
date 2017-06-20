@@ -14,14 +14,14 @@ import java.util.Random;
  */
 public class User implements Serializable {
 
-    int userId;
-    String username;
+    private int userId;
+    private String username;
     private transient String password;
-    String email;
-    int totalScore;
-    int highestScore;
-    int gamesPlayed;
-    int sessionID;
+    private String email;
+    private int totalScore;
+    private int highestScore;
+    private int gamesPlayed;
+    private int sessionID;
 
     public User(int userId, String username, String password, String email, int score, int highest, int played) {
         this.userId = userId;
@@ -78,5 +78,13 @@ public class User implements Serializable {
 
     public int getTotalScore() {
         return totalScore;
+    }
+    
+    public int getHighestScore(){
+    return highestScore;
+    }
+    
+    public int getPlayedGames(){
+    return gamesPlayed;
     }
 }

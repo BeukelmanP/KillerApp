@@ -26,16 +26,16 @@ public class Game extends UnicastRemoteObject implements ILiveGame {
     public String Name;
     public User clientUser;
     public User serverUser;
-    public Ship[] clientShips = new Ship[3];
-    public Ship[] serverShips = new Ship[3];
+    private Ship[] clientShips = new Ship[3];
+    private Ship[] serverShips = new Ship[3];
     public String ipAdress;
     //0=server,  1=client
-    public int turn = 10;
+    private int turn = 10;
     //3=server   4=client
-    public int winner;
-    public int totalTurns = 0;
+    private int winner;
+    private int totalTurns = 0;
     RemotePublisher gamePublisher;
-    public Coordinate lastTurn;
+    private Coordinate lastTurn;
 
     public Game(RemotePublisher publisher) throws RemoteException {
         gamePublisher = publisher;
@@ -175,6 +175,7 @@ public class Game extends UnicastRemoteObject implements ILiveGame {
     }
 
     public void sendScores(int winner) throws RemoteException {
+        System.out.println("SEND SCORES:");
         Registry registry = null;
         IFinishGame finishInterface = null;
         try {
@@ -204,11 +205,12 @@ public class Game extends UnicastRemoteObject implements ILiveGame {
         int score2;
         if (winner == 0) {
             score1 = 500 - (5 * totalTurns);
-            score2 = 500 - (5 * totalTurns);
+            score2 = 100;
         } else {
             score2 = 500 - (5 * totalTurns);
-            score1 = 500 - (5 * totalTurns);
+            score1 = 100;
         }
+        System.out.println("server: " + score1 + " client: " + score2);
         finishInterface.updateScores(serverUser, clientUser, score1, score2);
     }
 

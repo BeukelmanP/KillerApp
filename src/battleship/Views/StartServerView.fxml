@@ -10,16 +10,17 @@
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="battleship.Views.StartServerViewController">
   <children>
     <Label fx:id="lblStatus" layoutX="272.0" layoutY="192.0" text="Label" visible="false" />
-    <Pane fx:id="paneCreate" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0">
+    <Pane fx:id="paneCreate" layoutX="14.0" layoutY="23.0" prefHeight="200.0" prefWidth="200.0">
       <children>
-        <Label layoutX="14.0" layoutY="16.0" text="Start GameServer:">
+        <Label layoutX="14.0" layoutY="37.0" text="Start GameServer:">
           <font>
             <Font size="15.0" />
           </font>
         </Label>
-        <Button layoutX="14.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#registerGame" text="Register" />
-        <TextField fx:id="txtName" layoutX="14.0" layoutY="57.0" prefWidth="131.0" />
-        <Label layoutX="18.0" layoutY="41.0" text="GameName:" />
+        <Button layoutX="14.0" layoutY="100.0" mnemonicParsing="false" onMouseClicked="#registerGame" text="Register" />
+        <TextField fx:id="txtName" layoutX="14.0" layoutY="78.0" prefWidth="131.0" />
+        <Label layoutX="18.0" layoutY="62.0" text="GameName:" />
+        <Button layoutX="14.0" layoutY="9.0" mnemonicParsing="false" onMouseClicked="#backbtnClick" text="Back" />
       </children>
     </Pane>
   </children>

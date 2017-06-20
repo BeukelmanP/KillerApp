@@ -6,9 +6,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="battleship.Views.JoinGameViewController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="310.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="battleship.Views.JoinGameViewController">
   <children>
-    <ListView fx:id="gameList" layoutX="300.0" layoutY="14.0" onMouseClicked="#ConnectClick" prefHeight="372.0" prefWidth="286.0" />
+    <ListView fx:id="gameList" layoutX="14.0" layoutY="45.0" onMouseClicked="#ConnectClick" prefHeight="341.0" prefWidth="286.0" />
     <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#RefreshClick" text="Refresh" />
+    <Button layoutX="83.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#backbtnClick" prefWidth="60.0" text="Back" />
   </children>
 </AnchorPane>

@@ -13,12 +13,12 @@ import java.io.Serializable;
  */
 public class Ship implements Serializable {
 
-    Coordinate[] coordinates;
-    Coordinate[] shotcoordinates;
-    boolean isSunk = false;
-    String name;
-    int length;
-    int hits = 0;
+    private Coordinate[] coordinates;
+    private Coordinate[] shotcoordinates;
+    private boolean isSunk = false;
+    private String name;
+    private int length;
+    private int hits = 0;
 
     public Ship(Coordinate[] coordinates, String name) {
         this.coordinates = coordinates;

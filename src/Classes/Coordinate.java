@@ -13,8 +13,8 @@ import java.io.Serializable;
  */
 public class Coordinate implements Serializable{
 
-    int X;
-    int Y;
+    private int X;
+    private int Y;
 
     public Coordinate(int x, int y) {
         X = x;

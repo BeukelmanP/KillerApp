@@ -43,16 +43,16 @@ import javafx.stage.Stage;
  * @author piete
  */
 public class StartServerViewController implements Initializable {
-    
+
     @FXML
     TextField txtName;
     @FXML
     Label lblStatus;
     @FXML
     Pane paneCreate;
-    
+
     Game liveGame;
-    
+
     Registry registry = null;
     ICreateGame createInterface;
     InetAddress localhost;
@@ -94,11 +94,11 @@ public class StartServerViewController implements Initializable {
             Logger.getLogger(BattleShip_Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void setUp(User loggedIn) {
         loggedInUser = loggedIn;
     }
-    
+
     public void registerGame() throws RemoteException {
         try {
             registry = LocateRegistry.createRegistry(1098);
@@ -133,7 +133,7 @@ public class StartServerViewController implements Initializable {
         createInterface.createGame(localhost.getHostAddress(), txtName.getText(), 1098);
         Timer timer = new Timer();
         class PeriodiekeActie extends java.util.TimerTask {
-            
+
             @Override
             public void run() {
                 Platform.runLater(new Runnable() {
@@ -151,13 +151,15 @@ public class StartServerViewController implements Initializable {
                             }
                             GameViewController controller = (GameViewController) fxmlLoader.getController();
                             try {
-                                controller.setUpServer(liveGame);
+                                controller.setUpServer(liveGame, loggedInUser);
                             } catch (RemoteException ex) {
                                 Logger.getLogger(StartServerViewController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             stage.setScene(new Scene(root1));
                             stage.show();
-                            
+                            Stage stage2 = (Stage) lblStatus.getScene().getWindow();
+                            stage2.close();
+
                         } else if (lblStatus.getText() == "Waiting for opponent.") {
                             lblStatus.setText("Waiting for opponent..");
                         } else if (lblStatus.getText() == "Waiting for opponent..") {
@@ -174,7 +176,19 @@ public class StartServerViewController implements Initializable {
             }
         }
         timer.scheduleAtFixedRate(new PeriodiekeActie(), 0, 500);
-        
+
     }
-    
+
+    public void backbtnClick() throws IOException {
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/battleship/Views/MainScreen.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        MainScreenController controller = (MainScreenController) fxmlLoader.getController();
+        controller.setUp(loggedInUser);
+        stage.setScene(new Scene(root1));
+        stage.show();
+        Stage stage2 = (Stage) lblStatus.getScene().getWindow();
+        stage2.close();
+    }
+
 }
